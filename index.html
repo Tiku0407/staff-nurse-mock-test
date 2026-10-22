@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>स्टाफ नर्स लाइव मॉक टेस्ट — दिन 1</title>
+<meta name="description" content="छत्तीसगढ़ स्टाफ नर्स भर्ती परीक्षा हेतु CBT शैली लाइव मॉक टेस्ट — 50 प्रश्न, 100 अंक, 60 मिनट, उत्तर व्याख्या सहित।">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#eef1ef;--card:#ffffff;--ink:#1d2421;--muted:#5d6863;--line:#d7ddd9;
+  --brand:#0f5f73;--brand-ink:#ffffff;--brand-soft:#e2eff2;
+  --ans:#16a34a;--nans:#dc2626;--nv:#c9cfcc;--mark:#7c3aed;--warn:#b45309;
+  --ok-soft:#e6f4ea;--bad-soft:#fdecec;
+}
+@media (prefers-color-scheme: dark){
+  :root{--bg:#111514;--card:#1a201e;--ink:#e8ece9;--muted:#9aa6a0;--line:#2d3633;
+  --brand:#38bdf8;--brand-ink:#08202b;--brand-soft:#12303b;
+  --ans:#22c55e;--nans:#ef4444;--nv:#3a4440;--mark:#a78bfa;--warn:#fbbf24;--ok-soft:#14301e;--bad-soft:#3a1a1a;}
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--ink);font-family:"Noto Sans Devanagari",system-ui,sans-serif;line-height:1.6}
+button{font:inherit;cursor:pointer}
+.hidden{display:none!important}
+
+/* ऊपरी पट्टी */
+.topbar{background:var(--brand);color:var(--brand-ink);padding:10px 16px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.topbar h1{font-size:16px;margin:0;font-weight:700}
+.topbar .who{font-size:13px;opacity:.9}
+.timer{font-variant-numeric:tabular-nums;font-weight:700;font-size:18px;background:rgba(255,255,255,.18);padding:3px 12px;border-radius:8px}
+.timer.low{background:var(--nans);color:#fff;animation:blink 1s infinite}
+@keyframes blink{50%{opacity:.6}}
+
+/* प्रारंभ / परिणाम स्क्रीन */
+.page{max-width:860px;margin:24px auto;padding:0 16px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px 22px;margin-bottom:16px}
+.panel h2{margin:0 0 10px;font-size:20px}
+.panel ul{margin:6px 0;padding-left:20px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{border-bottom:1px solid var(--line);padding:8px;text-align:left;vertical-align:top}
+th{color:var(--muted);font-weight:600}
+input[type=text]{font:inherit;width:100%;max-width:360px;padding:9px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}
+label.agree{display:flex;gap:8px;align-items:flex-start;margin:14px 0}
+.btn{border:0;border-radius:8px;padding:10px 18px;font-weight:600;background:var(--brand);color:var(--brand-ink)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn.green{background:var(--ans);color:#fff}
+.btn.purple{background:var(--mark);color:#fff}
+.btn.red{background:var(--nans);color:#fff}
+
+/* परीक्षा लेआउट */
+.exam{display:grid;grid-template-columns:1fr 300px;gap:14px;max-width:1200px;margin:14px auto;padding:0 14px}
+.qpane{background:var(--card);border:1px solid var(--line);border-radius:12px;display:flex;flex-direction:column;min-height:70vh}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;padding:10px 12px;border-bottom:1px solid var(--line)}
+.tab{border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:6px;padding:4px 10px;font-size:13px}
+.tab.on{background:var(--brand);color:var(--brand-ink);border-color:var(--brand)}
+.qhead{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid var(--line);font-size:14px;color:var(--muted)}
+.qhead strong{color:var(--ink);font-size:16px}
+.qbody{padding:18px 16px;flex:1}
+.qtext{font-size:17px;font-weight:600;margin:0 0 16px}
+.opt{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:8px;padding:11px 12px;margin-bottom:9px;cursor:pointer}
+.opt:hover{border-color:var(--brand)}
+.opt.sel{border-color:var(--brand);background:var(--brand-soft)}
+.opt input{margin-top:6px;accent-color:var(--brand)}
+.qfoot{display:flex;gap:8px;flex-wrap:wrap;justify-content:space-between;padding:12px 16px;border-top:1px solid var(--line)}
+.qfoot .l,.qfoot .r{display:flex;gap:8px;flex-wrap:wrap}
+
+.side{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;align-self:start;position:sticky;top:12px}
+.legend{display:grid;grid-template-columns:1fr 1fr;gap:6px 10px;font-size:12px;margin-bottom:12px}
+.legend span{display:flex;align-items:center;gap:6px}
+.dot{width:22px;height:22px;border-radius:5px;display:inline-grid;place-items:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0;position:relative}
+.s-nv{background:var(--nv);color:var(--ink)}
+.s-na{background:var(--nans)}
+.s-a{background:var(--ans)}
+.s-m{background:var(--mark);border-radius:50%}
+.s-am{background:var(--mark);border-radius:50%}
+.s-am::after{content:"";position:absolute;right:-2px;bottom:-2px;width:9px;height:9px;border-radius:50%;background:var(--ans);border:2px solid var(--card)}
+.palette-title{font-size:13px;font-weight:700;margin:10px 0 6px;color:var(--muted)}
+.palette{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}
+.palette .dot{width:100%;height:36px;font-size:13px;border:0}
+.palette .dot.cur{outline:3px solid var(--brand);outline-offset:1px}
+.summary{font-size:13px;color:var(--muted);margin-top:12px}
+.side .btn{width:100%;margin-top:12px}
+
+/* परिणाम */
+.score{font-size:40px;font-weight:700;color:var(--brand);line-height:1.2}
+.rq{border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:10px;background:var(--card)}
+.rq p{margin:0 0 8px;font-weight:600}
+.rq .o{padding:5px 10px;border-radius:6px;margin:3px 0;font-size:14px}
+.rq .o.c{background:var(--ok-soft);color:var(--ans);font-weight:600}
+.rq .o.w{background:var(--bad-soft);color:var(--nans);text-decoration:line-through}
+.rq .e{font-size:14px;background:var(--brand-soft);padding:8px 10px;border-radius:6px;margin-top:8px}
+.badge{font-size:12px;font-weight:700;margin-left:6px}
+.badge.ok{color:var(--ans)}.badge.bad{color:var(--nans)}.badge.skip{color:var(--warn)}
+.filters{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0 14px}
+
+/* मोबाइल */
+.palette-toggle{display:none}
+@media (max-width:860px){
+  .exam{grid-template-columns:1fr}
+  .side{position:fixed;inset:auto 0 0 0;top:auto;max-height:70vh;overflow:auto;border-radius:14px 14px 0 0;z-index:20;transform:translateY(100%);transition:transform .2s}
+  .side.open{transform:none}
+  .palette-toggle{display:inline-block}
+  .qtext{font-size:16px}
+}
+@media print{.topbar,.filters,.no-print{display:none!important}body{background:#fff}.rq{break-inside:avoid}}
+</style>
+</head>
+<body>
+
+<!-- ===== प्रारंभ स्क्रीन ===== -->
+<div id="startScreen">
+  <div class="topbar"><h1>स्टाफ नर्स लाइव मॉक टेस्ट · दिन 1</h1><span class="who">CBT अभ्यास</span></div>
+  <div class="page">
+    <div class="panel">
+      <h2>परीक्षा निर्देश</h2>
+      <p>छत्तीसगढ़ स्टाफ नर्स भर्ती सिलेबस (संचालनालय स्वास्थ्य सेवाएं) पर आधारित · कुल 50 प्रश्न · 100 अंक · 60 मिनट</p>
+      <ul>
+        <li>प्रत्येक प्रश्न 2 अंक का है; केवल एक विकल्प सही है। नकारात्मक अंकन नहीं है।</li>
+        <li>टाइमर ऊपर दाईं ओर चलेगा; 0:00 होते ही परीक्षा स्वतः जमा हो जाएगी।</li>
+        <li><strong>सेव करें और आगे बढ़ें</strong> — उत्तर सहेजता है। <strong>रिव्यू हेतु मार्क करें</strong> — बाद में देखने के लिए चिह्नित करता है (उत्तर चुना हो तो वह भी गिना जाएगा)।</li>
+        <li>दाईं ओर प्रश्न-पैलेट से किसी भी प्रश्न पर सीधे जा सकते हैं।</li>
+      </ul>
+      <div class="legend" style="max-width:520px;margin-top:12px">
+        <span><i class="dot s-nv">1</i> नहीं देखा</span>
+        <span><i class="dot s-na">2</i> उत्तर नहीं दिया</span>
+        <span><i class="dot s-a">3</i> उत्तर दिया</span>
+        <span><i class="dot s-m">4</i> रिव्यू हेतु मार्क</span>
+        <span><i class="dot s-am">5</i> उत्तर दिया + मार्क</span>
+      </div>
+    </div>
+    <div class="panel">
+      <h2>खंड विवरण</h2>
+      <table><thead><tr><th>खंड</th><th>विषय</th><th>प्रश्न</th><th>अंक</th></tr></thead><tbody id="secTable"></tbody></table>
+    </div>
+    <div class="panel">
+      <label for="cname"><strong>अभ्यर्थी का नाम</strong> (वैकल्पिक)</label><br>
+      <input type="text" id="cname" placeholder="अपना नाम लिखें">
+      <label class="agree"><input type="checkbox" id="agree"> मैंने सभी निर्देश पढ़ लिए हैं और परीक्षा शुरू करने के लिए तैयार हूँ।</label>
+      <button class="btn" id="startBtn" disabled>परीक्षा शुरू करें</button>
+      <button class="btn ghost hidden" id="resumeBtn">अधूरी परीक्षा जारी रखें</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== परीक्षा स्क्रीन ===== -->
+<div id="examScreen" class="hidden">
+  <div class="topbar">
+    <div><h1>स्टाफ नर्स लाइव मॉक टेस्ट · दिन 1</h1><span class="who" id="whoLine"></span></div>
+    <div style="display:flex;gap:10px;align-items:center">
+      <button class="btn ghost palette-toggle" style="color:inherit;border-color:rgba(255,255,255,.5)" id="palToggle">पैलेट</button>
+      <span class="timer" id="timer">60:00</span>
+    </div>
+  </div>
+  <div class="exam">
+    <div class="qpane">
+      <div class="tabs" id="tabs"></div>
+      <div class="qhead"><strong id="qno"></strong><span id="qmeta">+2 अंक · 0 नकारात्मक</span></div>
+      <div class="qbody">
+        <p class="qtext" id="qtext"></p>
+        <div id="opts"></div>
+      </div>
+      <div class="qfoot">
+        <div class="l">
+          <button class="btn purple" id="markBtn">रिव्यू हेतु मार्क करें और आगे बढ़ें</button>
+          <button class="btn ghost" id="clearBtn">उत्तर हटाएँ</button>
+        </div>
+        <div class="r">
+          <button class="btn ghost" id="prevBtn">« पिछला</button>
+          <button class="btn green" id="saveBtn">सेव करें और आगे बढ़ें »</button>
+        </div>
+      </div>
+    </div>
+    <aside class="side" id="side">
+      <div class="legend">
+        <span><i class="dot s-a" id="cA">0</i> उत्तर दिया</span>
+        <span><i class="dot s-na" id="cNA">0</i> उत्तर नहीं</span>
+        <span><i class="dot s-nv" id="cNV">0</i> नहीं देखा</span>
+        <span><i class="dot s-m" id="cM">0</i> मार्क</span>
+        <span style="grid-column:span 2"><i class="dot s-am" id="cAM">0</i> उत्तर दिया + मार्क (मूल्यांकन होगा)</span>
+      </div>
+      <div class="palette-title" id="palTitle"></div>
+      <div class="palette" id="palette"></div>
+      <button class="btn red" id="submitBtn">परीक्षा जमा करें</button>
+    </aside>
+  </div>
+</div>
+
+<!-- ===== परिणाम स्क्रीन ===== -->
+<div id="resultScreen" class="hidden">
+  <div class="topbar"><h1>परिणाम · स्टाफ नर्स मॉक टेस्ट दिन 1</h1><span class="who" id="resWho"></span></div>
+  <div class="page">
+    <div class="panel" id="scoreCard"></div>
+    <div class="panel">
+      <h2>उत्तर समीक्षा</h2>
+      <div class="filters no-print" id="rfilters">
+        <button class="tab on" data-r="all">सभी</button>
+        <button class="tab" data-r="w">गलत</button>
+        <button class="tab" data-r="s">छोड़े</button>
+        <button class="tab" data-r="c">सही</button>
+      </div>
+      <div id="review"></div>
+    </div>
+    <div class="no-print" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:40px">
+      <button class="btn" id="retryBtn">फिर से परीक्षा दें</button>
+      <button class="btn ghost" onclick="window.print()">प्रिंट / PDF</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const PAPER_ID = "cg-staff-nurse-day-01";
+const SECTIONS = [
+  {id:1, short:"फंडामेंटल्स/मेडिकल", name:"एनाटॉमी, फिजियोलॉजी, माइक्रोबायोलॉजी, फंडामेंटल्स, मेडिकल-सर्जिकल एवं OBG"},
+  {id:2, short:"सामुदायिक/पोषण", name:"सामुदायिक स्वास्थ्य नर्सिंग एवं पोषण"},
+  {id:3, short:"मानसिक/मनोविज्ञान", name:"मानसिक स्वास्थ्य नर्सिंग, मनोविज्ञान एवं समाजशास्त्र"},
+  {id:4, short:"प्रोफेशनल/रिसर्च/कंप्यूटर", name:"प्रोफेशनल ट्रेंड्स, नर्सिंग रिसर्च एवं कंप्यूटर"},
+  {id:5, short:"शिक्षा/प्रशासन", name:"नर्सिंग शिक्षा एवं नर्सिंग प्रशासन"}
+];
+
+// a = सही विकल्प का index (0=क, 1=ख, 2=ग, 3=घ)
+const QUESTIONS = [
+ {s:1,q:"स्वस्थ व्यक्ति के धमनी रक्त (Arterial blood) का सामान्य pH कितना होता है?",o:["7.00–7.20","7.35–7.45","7.50–7.60","6.80–7.00"],a:1,e:"सामान्य रक्त pH 7.35–7.45; 7.35 से कम अम्लरक्तता, 7.45 से अधिक क्षारमयता।"},
+ {s:1,q:"शरीर pH 7.4 बनाए रखने के लिए बाइकार्बोनेट (HCO₃⁻) और कार्बोनिक एसिड (H₂CO₃) का अनुपात कितना रखता है?",o:["1:20","10:1","20:1","1:1"],a:2,e:"HCO₃⁻ : H₂CO₃ = 20:1 (लगभग 24 : 1.2 mEq/L); यह प्राथमिक बफर है।"},
+ {s:1,q:"किसी मरीज़ की ABG रिपोर्ट: pH 7.49, PaCO₂ 30 mmHg, HCO₃⁻ 25 mEq/L। यह किस स्थिति को दर्शाती है?",o:["श्वसन अम्लरक्तता (Respiratory acidosis)","चयापचयी क्षारमयता (Metabolic alkalosis)","श्वसन क्षारमयता (Respiratory alkalosis)","चयापचयी अम्लरक्तता (Metabolic acidosis)"],a:2,e:"pH बढ़ा और PaCO₂ घटा (सामान्य 35–45), HCO₃⁻ सामान्य (22–26) → श्वसन क्षारमयता।"},
+ {s:1,q:"रेडियल धमनी से ABG सैंपल लेने से पहले कौन-सा परीक्षण किया जाता है?",o:["रोम्बर्ग टेस्ट","एलेन टेस्ट (Allen's test)","ट्रेंडेलनबर्ग टेस्ट","मैंटॉक्स टेस्ट"],a:1,e:"एलेन टेस्ट अल्नर धमनी से हाथ के कोलैटरल रक्त-प्रवाह की जाँच करता है।"},
+ {s:1,q:"मधुमेह कीटोएसिडोसिस (DKA) में दिखने वाला गहरा व तेज़ श्वसन क्या कहलाता है?",o:["चेन-स्टोक्स श्वसन","बायोट श्वसन","कुसमॉल श्वसन (Kussmaul's respiration)","एप्निया"],a:2,e:"चयापचयी अम्लरक्तता में शरीर CO₂ बाहर निकालने हेतु गहरी-तेज़ कुसमॉल श्वसन करता है।"},
+ {s:1,q:"नवजात शिशु के APGAR स्कोर में कितने मापदंड (criteria) जाँचे जाते हैं?",o:["3","4","5","10"],a:2,e:"5 मापदंड: हृदय गति, श्वसन प्रयास, मांसपेशी टोन, रिफ्लेक्स, रंग; अधिकतम स्कोर 10।"},
+ {s:1,q:"मानव शरीर की सबसे लंबी और सबसे मज़बूत अस्थि कौन-सी है?",o:["टिबिया","ह्यूमरस","फीमर","फिबुला"],a:2,e:"फीमर (जांघ की अस्थि) सबसे लंबी व मज़बूत अस्थि है।"},
+ {s:1,q:"ऑटोक्लेव (Autoclave) द्वारा स्टेरिलाइज़ेशन का मानक तापमान और दबाव क्या है?",o:["100°C, 5 psi","121°C, 15 psi","160°C, 30 psi","80°C, 10 psi"],a:1,e:"ऑटोक्लेव: 121°C, 15 psi, सामान्यतः 15–20 मिनट।"},
+ {s:1,q:"श्वसन क्षारमयता (Respiratory alkalosis) के कारण टिटनी (Tetany) होने पर कौन-सा इंजेक्शन दिया जाता है?",o:["पोटैशियम क्लोराइड","सोडियम बाइकार्बोनेट","कैल्शियम ग्लूकोनेट","मैग्नीशियम सल्फेट"],a:2,e:"क्षारमयता में आयनित कैल्शियम घटता है, इसलिए कैल्शियम ग्लूकोनेट दिया जाता है।"},
+ {s:1,q:"एनाफिलैक्टिक शॉक (Anaphylactic shock) में सबसे पहले दी जाने वाली दवा कौन-सी है?",o:["एड्रेनालिन (Adrenaline)","एट्रोपिन","डोपामिन","डायजेपाम"],a:0,e:"एड्रेनालिन (1:1000, IM) एनाफिलैक्सिस की पहली दवा है।"},
+
+ {s:2,q:"प्राथमिक स्वास्थ्य देखभाल (Primary Health Care) पर अल्मा-अता घोषणा किस वर्ष हुई थी?",o:["1948","1966","1978","1983"],a:2,e:"अल्मा-अता (USSR) घोषणा, सितंबर 1978: 'सबके लिए स्वास्थ्य'।"},
+ {s:2,q:"मैदानी क्षेत्र में एक प्राथमिक स्वास्थ्य केंद्र (PHC) कितनी जनसंख्या पर स्थापित किया जाता है?",o:["5,000","20,000","30,000","1,20,000"],a:2,e:"PHC: मैदानी 30,000; पहाड़ी/जनजातीय क्षेत्र 20,000।"},
+ {s:2,q:"मैदानी क्षेत्र में एक उप-स्वास्थ्य केंद्र (Sub-centre) कितनी जनसंख्या पर होता है?",o:["1,000","3,000","5,000","10,000"],a:2,e:"उप-केंद्र: मैदानी 5,000; पहाड़ी/जनजातीय 3,000।"},
+ {s:2,q:"BCG टीका किस मार्ग (route) से दिया जाता है?",o:["इंट्रामस्कुलर","सबक्यूटेनियस","इंट्राडर्मल","मौखिक"],a:2,e:"BCG 0.05 ml (नवजात) / 0.1 ml, बाएँ कंधे पर इंट्राडर्मल।"},
+ {s:2,q:"राष्ट्रीय टीकाकरण कार्यक्रम में MR (Measles-Rubella) टीके की पहली खुराक किस आयु में दी जाती है?",o:["जन्म के समय","6 सप्ताह","9–12 माह","5 वर्ष"],a:2,e:"MR-1: 9–12 माह; MR-2: 16–24 माह।"},
+ {s:2,q:"कॉपर-T 380A कितने वर्षों तक प्रभावी रहता है?",o:["3 वर्ष","5 वर्ष","10 वर्ष","15 वर्ष"],a:2,e:"Cu-T 380A 10 वर्ष तक; Cu-T 375 पाँच वर्ष तक प्रभावी।"},
+ {s:2,q:"रतौंधी (Night blindness) किस विटामिन की कमी से होती है?",o:["विटामिन A","विटामिन B₁","विटामिन C","विटामिन D"],a:0,e:"विटामिन A की कमी: रतौंधी, बिटॉट स्पॉट, ज़ेरोफ्थैल्मिया।"},
+ {s:2,q:"1 ग्राम वसा (Fat) से कितनी ऊर्जा प्राप्त होती है?",o:["4 kcal","7 kcal","9 kcal","12 kcal"],a:2,e:"वसा 9 kcal/g; प्रोटीन व कार्बोहाइड्रेट 4 kcal/g।"},
+ {s:2,q:"स्कर्वी (Scurvy) रोग किसकी कमी से होता है?",o:["विटामिन K","विटामिन C","आयरन","आयोडीन"],a:1,e:"विटामिन C की कमी से मसूड़ों से खून, स्कर्वी।"},
+ {s:2,q:"क्वाशियोरकोर (Kwashiorkor) मुख्यतः किसकी कमी से होता है?",o:["कार्बोहाइड्रेट","वसा","प्रोटीन","कैल्शियम"],a:2,e:"क्वाशियोरकोर = प्रोटीन की कमी (शोथ सहित); मरास्मस = प्रोटीन-ऊर्जा दोनों की कमी।"},
+
+ {s:3,q:"इलेक्ट्रो-कन्वल्सिव थेरेपी (ECT) का सबसे प्रमुख संकेत (indication) क्या है?",o:["चिंता विकार","आत्महत्या की प्रवृत्ति वाला गंभीर अवसाद","व्यक्तित्व विकार","मानसिक मंदता"],a:1,e:"ECT गंभीर व आत्महत्या-प्रवृत्ति वाले अवसाद में सबसे प्रभावी है।"},
+ {s:3,q:"लिथियम (Lithium) का सामान्य चिकित्सीय सीरम स्तर कितना होता है?",o:["0.1–0.3 mEq/L","0.6–1.2 mEq/L","2.0–3.0 mEq/L","3.5–5.0 mEq/L"],a:1,e:"लिथियम चिकित्सीय स्तर 0.6–1.2 mEq/L; 1.5 से ऊपर विषाक्तता का खतरा।"},
+ {s:3,q:"भारत में मानसिक स्वास्थ्य देखभाल अधिनियम (Mental Healthcare Act) किस वर्ष पारित हुआ?",o:["1912","1987","2005","2017"],a:3,e:"मानसिक स्वास्थ्य देखभाल अधिनियम 2017; इससे पहले मानसिक स्वास्थ्य अधिनियम 1987।"},
+ {s:3,q:"अपनी अस्वीकार्य भावनाओं या दोषों को दूसरों पर आरोपित करना कौन-सा रक्षा तंत्र (Defence mechanism) है?",o:["प्रक्षेपण (Projection)","दमन (Repression)","प्रतिगमन (Regression)","उदात्तीकरण (Sublimation)"],a:0,e:"प्रक्षेपण में व्यक्ति अपने दोष दूसरों पर डालता है।"},
+ {s:3,q:"'सिज़ोफ्रेनिया' (Schizophrenia) शब्द सबसे पहले किसने दिया?",o:["सिगमंड फ्रायड","यूजेन ब्लूलर","एमिल क्रेपलिन","कार्ल जुंग"],a:1,e:"यूजेन ब्लूलर (1911); क्रेपलिन ने इसे 'डिमेंशिया प्रीकॉक्स' कहा था।"},
+ {s:3,q:"मास्लो की आवश्यकता पदानुक्रम (Hierarchy of needs) में सबसे निचले स्तर पर कौन-सी आवश्यकता है?",o:["सुरक्षा","आत्म-सम्मान","शारीरिक/दैहिक (Physiological)","आत्म-सिद्धि"],a:2,e:"सबसे नीचे शारीरिक आवश्यकताएँ (भोजन, जल, ऑक्सीजन), सबसे ऊपर आत्म-सिद्धि।"},
+ {s:3,q:"बुद्धि लब्धि (IQ) का सूत्र क्या है?",o:["(वास्तविक आयु ÷ मानसिक आयु) × 100","(मानसिक आयु ÷ वास्तविक आयु) × 100","मानसिक आयु × वास्तविक आयु","(मानसिक आयु − वास्तविक आयु) × 10"],a:1,e:"IQ = (मानसिक आयु ÷ वास्तविक आयु) × 100 (विलियम स्टर्न)।"},
+ {s:3,q:"डेलिरियम ट्रेमेंस (Delirium tremens) किससे संबंधित है?",o:["अफीम का अधिक सेवन","शराब छोड़ने पर होने वाले लक्षण (Alcohol withdrawal)","सिज़ोफ्रेनिया","मिर्गी"],a:1,e:"शराब छोड़ने के 48–72 घंटे बाद भ्रम, कंपन, मतिभ्रम।"},
+ {s:3,q:"पति, पत्नी और उनके अविवाहित बच्चों वाला परिवार क्या कहलाता है?",o:["संयुक्त परिवार","विस्तारित परिवार","एकल परिवार (Nuclear family)","मातृसत्तात्मक परिवार"],a:2,e:"एकल/नाभिकीय परिवार: पति-पत्नी व अविवाहित संतान।"},
+ {s:3,q:"'समाजशास्त्र का जनक' (Father of Sociology) किसे कहा जाता है?",o:["ऑगस्ट कॉम्टे","कार्ल मार्क्स","मैक्स वेबर","एमिल दुर्खीम"],a:0,e:"ऑगस्ट कॉम्टे ने 'Sociology' शब्द दिया।"},
+
+ {s:4,q:"भारतीय नर्सिंग परिषद (Indian Nursing Council) की स्थापना किस अधिनियम/वर्ष में हुई?",o:["1935","1947","1950","1962"],a:1,e:"INC का गठन भारतीय नर्सिंग परिषद अधिनियम 1947 के अंतर्गत हुआ।"},
+ {s:4,q:"अंतर्राष्ट्रीय नर्स दिवस (International Nurses Day) किस तिथि को मनाया जाता है?",o:["7 अप्रैल","12 मई","1 जुलाई","13 अगस्त"],a:1,e:"12 मई फ्लोरेंस नाइटिंगेल का जन्मदिवस (1820) है।"},
+ {s:4,q:"फ्लोरेंस नाइटिंगेल द्वारा स्थापित पहला नर्सिंग स्कूल किस अस्पताल में था?",o:["सेंट थॉमस अस्पताल, लंदन","जॉन्स हॉपकिन्स, अमेरिका","गाय्ज़ अस्पताल, लंदन","स्कुटारी अस्पताल, तुर्की"],a:0,e:"नाइटिंगेल ट्रेनिंग स्कूल, सेंट थॉमस अस्पताल, लंदन (1860)।"},
+ {s:4,q:"अंतर्राष्ट्रीय नर्स परिषद (ICN) का मुख्यालय कहाँ है?",o:["न्यूयॉर्क","लंदन","जिनेवा","पेरिस"],a:2,e:"ICN (स्थापना 1899) का मुख्यालय जिनेवा, स्विट्ज़रलैंड।"},
+ {s:4,q:"किसी आँकड़ा समूह में सबसे अधिक बार आने वाला मान क्या कहलाता है?",o:["माध्य (Mean)","माध्यिका (Median)","बहुलक (Mode)","परास (Range)"],a:2,e:"बहुलक (Mode) सबसे अधिक बार आने वाला मान है।"},
+ {s:4,q:"शोध में जिस चर (variable) को शोधकर्ता नियंत्रित या परिवर्तित करता है, उसे क्या कहते हैं?",o:["आश्रित चर (Dependent)","स्वतंत्र चर (Independent)","बाह्य चर (Extraneous)","मध्यस्थ चर"],a:1,e:"स्वतंत्र चर बदला जाता है; उसका प्रभाव आश्रित चर पर मापा जाता है।"},
+ {s:4,q:"आँकड़े 2, 4, 4, 6, 9 की माध्यिका (Median) क्या है?",o:["4","5","6","4.5"],a:0,e:"क्रमबद्ध आँकड़ों का बीच वाला (तीसरा) मान 4 है।"},
+ {s:4,q:"MS Excel की फ़ाइल को क्या कहा जाता है?",o:["डॉक्यूमेंट","प्रेज़ेंटेशन","वर्कबुक (Workbook)","डेटाबेस"],a:2,e:"Excel फ़ाइल = वर्कबुक, जिसमें कई वर्कशीट होती हैं।"},
+ {s:4,q:"बिजली बंद होने पर जिस मेमोरी का डेटा मिट जाता है, वह कौन-सी है?",o:["ROM","RAM","हार्ड डिस्क","पेन ड्राइव"],a:1,e:"RAM अस्थायी (Volatile) मेमोरी है; ROM स्थायी है।"},
+ {s:4,q:"कंप्यूटर में Ctrl + Z शॉर्टकट का उपयोग किसलिए होता है?",o:["सेव","कॉपी","अंडू (Undo)","प्रिंट"],a:2,e:"Ctrl + Z = Undo; Ctrl + Y = Redo।"},
+
+ {s:5,q:"प्रशासन के कार्यों का सूत्र POSDCORB किसने दिया?",o:["हेनरी फेयोल","लूथर गुलिक","एफ. डब्ल्यू. टेलर","पीटर ड्रकर"],a:1,e:"लूथर गुलिक (1937): Planning, Organizing, Staffing, Directing, Coordinating, Reporting, Budgeting।"},
+ {s:5,q:"हेनरी फेयोल ने प्रबंधन के कितने सिद्धांत (Principles of management) दिए?",o:["5","7","12","14"],a:3,e:"फेयोल ने 14 सिद्धांत दिए; उन्हें आधुनिक प्रबंधन का जनक कहा जाता है।"},
+ {s:5,q:"प्रबंधन (Management) का पहला और आधारभूत कार्य कौन-सा है?",o:["संगठन","नियोजन (Planning)","निर्देशन","नियंत्रण"],a:1,e:"नियोजन सभी प्रबंधकीय कार्यों का आधार है।"},
+ {s:5,q:"'आदेश की एकता' (Unity of command) का अर्थ है—",o:["सभी कर्मचारी एक साथ काम करें","एक कर्मचारी केवल एक ही अधिकारी से आदेश प्राप्त करे","एक अधिकारी के अधीन सभी विभाग हों","सभी निर्णय समिति द्वारा लिए जाएँ"],a:1,e:"एक कर्मचारी का एक ही वरिष्ठ अधिकारी होना चाहिए।"},
+ {s:5,q:"एक पर्यवेक्षक जितने अधीनस्थों को प्रभावी ढंग से नियंत्रित कर सके, उसे क्या कहते हैं?",o:["अधिकार रेखा (Line of authority)","नियंत्रण का विस्तार (Span of control)","प्रत्यायोजन (Delegation)","केंद्रीकरण"],a:1,e:"Span of control = एक पर्यवेक्षक के अधीन प्रभावी अधीनस्थों की संख्या।"},
+ {s:5,q:"जिस नेतृत्व शैली में सभी निर्णय नेता स्वयं लेता है और अधीनस्थों से परामर्श नहीं करता, वह कौन-सी है?",o:["लोकतांत्रिक","निरंकुश (Autocratic)","लैसे-फेयर","सहभागी"],a:1,e:"निरंकुश नेतृत्व में अधिकार और निर्णय नेता के पास केंद्रित रहते हैं।"},
+ {s:5,q:"इन्वेंटरी नियंत्रण में VED विश्लेषण किस आधार पर किया जाता है?",o:["वस्तु की कीमत","वस्तु की उपयोगिता/अनिवार्यता (Vital, Essential, Desirable)","वस्तु का भार","खरीद की तिथि"],a:1,e:"VED = अनिवार्यता के आधार पर; ABC = लागत/मूल्य के आधार पर।"},
+ {s:5,q:"नर्सिंग छात्रों को मनोप्रेरक (Psychomotor) कौशल, जैसे इंजेक्शन लगाना, सिखाने के लिए सबसे उपयुक्त शिक्षण विधि कौन-सी है?",o:["व्याख्यान (Lecture)","सेमिनार","प्रदर्शन (Demonstration)","पैनल चर्चा"],a:2,e:"कौशल सिखाने हेतु प्रदर्शन व पुनः-प्रदर्शन (Return demonstration) सर्वोत्तम है।"},
+ {s:5,q:"ब्लूम की वर्गिकी (Bloom's taxonomy) का भावात्मक (Affective) क्षेत्र किससे संबंधित है?",o:["ज्ञान और समझ","अभिवृत्ति, भावनाएँ और मूल्य","हाथ के कौशल","स्मरण शक्ति"],a:1,e:"Cognitive = ज्ञान, Affective = अभिवृत्ति/मूल्य, Psychomotor = कौशल।"},
+ {s:5,q:"नर्सिंग शिक्षा में मूल्यांकन हेतु प्रयुक्त OSCE का पूर्ण रूप क्या है?",o:["Objective Structured Clinical Examination","Oral Standard Clinical Evaluation","Overall Skill Competency Exam","Objective Subject Clinical Evaluation"],a:0,e:"OSCE = Objective Structured Clinical Examination (हार्डन, 1975)।"}
+];
+
+const L = ["क","ख","ग","घ"], MARKS = 2, DURATION = 60*60, KEY = "mock_"+PAPER_ID;
+const $ = id => document.getElementById(id);
+let S = null, tick = null;
+
+/* ---------- स्थिति सहेजना (रिफ्रेश होने पर भी परीक्षा बनी रहे) ---------- */
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
+function load(){ try{ return JSON.parse(localStorage.getItem(KEY)); }catch(e){ return null; } }
+function clearSaved(){ try{ localStorage.removeItem(KEY); }catch(e){} }
+
+function newState(name){
+  return {name, cur:0, ans:Array(QUESTIONS.length).fill(null), visited:Array(QUESTIONS.length).fill(false),
+          marked:Array(QUESTIONS.length).fill(false), endAt:Date.now()+DURATION*1000, startAt:Date.now(), done:false};
+}
+function status(i){
+  const a = S.ans[i]!==null, m = S.marked[i];
+  if(a && m) return "s-am"; if(m) return "s-m"; if(a) return "s-a";
+  return S.visited[i] ? "s-na" : "s-nv";
+}
+
+/* ---------- प्रारंभ स्क्रीन ---------- */
+$("secTable").innerHTML = SECTIONS.map(s=>{
+  const idx = QUESTIONS.map((q,i)=>q.s===s.id?i+1:0).filter(Boolean);
+  return `<tr><td>${s.id}</td><td>${s.name}</td><td>${idx[0]}–${idx[idx.length-1]}</td><td>${idx.length*MARKS}</td></tr>`;
+}).join("");
+$("agree").onchange = e => $("startBtn").disabled = !e.target.checked;
+const saved = load();
+if(saved && !saved.done && saved.endAt > Date.now()){ $("resumeBtn").classList.remove("hidden"); }
+$("startBtn").onclick = ()=>{ S = newState($("cname").value.trim()); save(); startExam(); };
+$("resumeBtn").onclick = ()=>{ S = saved; startExam(); };
+
+/* ---------- परीक्षा ---------- */
+function startExam(){
+  $("startScreen").classList.add("hidden"); $("resultScreen").classList.add("hidden");
+  $("examScreen").classList.remove("hidden");
+  $("whoLine").textContent = S.name ? "अभ्यर्थी: "+S.name : "";
+  $("tabs").innerHTML = SECTIONS.map(s=>`<button class="tab" data-sec="${s.id}">खंड ${s.id}: ${s.short}</button>`).join("");
+  show(S.cur); runTimer();
+}
+function show(i){
+  S.cur = i; S.visited[i] = true;
+  const q = QUESTIONS[i];
+  $("qno").textContent = `प्रश्न ${i+1} / ${QUESTIONS.length}`;
+  $("qtext").textContent = q.q;
+  $("opts").innerHTML = q.o.map((o,j)=>
+    `<label class="opt ${S.ans[i]===j?"sel":""}"><input type="radio" name="opt" value="${j}" ${S.ans[i]===j?"checked":""}><span>(${L[j]}) ${o}</span></label>`).join("");
+  document.querySelectorAll(".tab[data-sec]").forEach(t=>t.classList.toggle("on", +t.dataset.sec===q.s));
+  $("prevBtn").disabled = i===0;
+  drawPalette(); save();
+}
+function picked(){ const r = document.querySelector('input[name="opt"]:checked'); return r ? +r.value : null; }
+function drawPalette(){
+  const sec = QUESTIONS[S.cur].s;
+  $("palTitle").textContent = "खंड "+sec+" — "+SECTIONS[sec-1].name;
+  $("palette").innerHTML = QUESTIONS.map((q,i)=> q.s!==sec ? "" :
+    `<button class="dot ${status(i)} ${i===S.cur?"cur":""}" data-go="${i}" title="प्रश्न ${i+1}">${i+1}</button>`).join("");
+  const c = {"s-a":0,"s-na":0,"s-nv":0,"s-m":0,"s-am":0};
+  QUESTIONS.forEach((_,i)=>c[status(i)]++);
+  $("cA").textContent=c["s-a"]; $("cNA").textContent=c["s-na"]; $("cNV").textContent=c["s-nv"];
+  $("cM").textContent=c["s-m"]; $("cAM").textContent=c["s-am"];
+}
+function next(){ if(S.cur < QUESTIONS.length-1) show(S.cur+1); else { drawPalette(); save(); alert("यह अंतिम प्रश्न है। पैलेट से प्रश्न दोबारा देखें या परीक्षा जमा करें।"); } }
+
+document.addEventListener("change", e=>{
+  if(e.target.name==="opt") document.querySelectorAll(".opt").forEach(o=>o.classList.toggle("sel", o.contains(e.target)));
+});
+$("saveBtn").onclick = ()=>{ S.ans[S.cur] = picked(); S.marked[S.cur] = false; next(); };
+$("markBtn").onclick = ()=>{ S.ans[S.cur] = picked(); S.marked[S.cur] = true; next(); };
+$("clearBtn").onclick = ()=>{ S.ans[S.cur] = null; show(S.cur); };
+$("prevBtn").onclick = ()=>{ if(S.cur>0) show(S.cur-1); };
+$("palToggle").onclick = ()=> $("side").classList.toggle("open");
+document.addEventListener("click", e=>{
+  const g = e.target.closest("[data-go]"); if(g){ show(+g.dataset.go); $("side").classList.remove("open"); return; }
+  const t = e.target.closest(".tab[data-sec]");
+  if(t){ show(QUESTIONS.findIndex(q=>q.s===+t.dataset.sec)); }
+});
+$("submitBtn").onclick = ()=>{
+  const n = S.ans.filter(a=>a!==null).length;
+  if(confirm(`आपने ${QUESTIONS.length} में से ${n} प्रश्न हल किए हैं।\n${QUESTIONS.length-n} प्रश्न शेष हैं।\n\nक्या आप परीक्षा जमा करना चाहते हैं?`)) finish(false);
+};
+
+/* ---------- टाइमर ---------- */
+function fmt(sec){ sec=Math.max(0,sec); const m=Math.floor(sec/60), s=sec%60; return String(m).padStart(2,"0")+":"+String(s).padStart(2,"0"); }
+function runTimer(){
+  clearInterval(tick);
+  const t = ()=>{
+    const left = Math.round((S.endAt - Date.now())/1000);
+    $("timer").textContent = fmt(left);
+    $("timer").classList.toggle("low", left<=300);
+    if(left<=0){ clearInterval(tick); finish(true); }
+  };
+  t(); tick = setInterval(t, 1000);
+}
+
+/* ---------- परिणाम ---------- */
+function finish(auto){
+  clearInterval(tick); S.done = true; if(!S.finishedAt) S.finishedAt = Math.min(Date.now(), S.endAt); save();
+  $("examScreen").classList.add("hidden"); $("resultScreen").classList.remove("hidden");
+  $("resWho").textContent = S.name ? "अभ्यर्थी: "+S.name : "";
+  let r=0,w=0,sk=0; const per = SECTIONS.map(()=>({r:0,w:0,t:0}));
+  QUESTIONS.forEach((q,i)=>{ const p=per[q.s-1]; p.t++;
+    if(S.ans[i]===null) sk++; else if(S.ans[i]===q.a){r++;p.r++;} else {w++;p.w++;} });
+  const score = r*MARKS, max = QUESTIONS.length*MARKS, pct = Math.round(score/max*100);
+  const attempted = r+w, acc = attempted ? Math.round(r/attempted*100) : 0;
+  const verdict = pct>=80 ? "उत्कृष्ट — चयन स्तर की तैयारी।" : pct>=60 ? "अच्छा प्रयास — कमज़ोर खंड दोहराएँ।" : "संबंधित खंड दोबारा पढ़ें और कल फिर प्रयास करें।";
+  $("scoreCard").innerHTML = `
+    <h2>आपका स्कोर</h2>
+    <div class="score">${score} / ${max}</div>
+    <p>${auto?"<strong>समय समाप्त — परीक्षा स्वतः जमा हुई।</strong> ":""}${verdict}</p>
+    <table><tbody>
+      <tr><th>सही</th><td>${r}</td><th>गलत</th><td>${w}</td></tr>
+      <tr><th>छोड़े</th><td>${sk}</td><th>सटीकता</th><td>${acc}%</td></tr>
+      <tr><th>लिया गया समय</th><td>${fmt(Math.round((S.finishedAt-S.startAt)/1000))}</td><th>प्रतिशत</th><td>${pct}%</td></tr>
+    </tbody></table>
+    <h2 style="margin-top:18px">खंड-वार प्रदर्शन</h2>
+    <table><thead><tr><th>खंड</th><th>सही</th><th>गलत</th><th>अंक</th></tr></thead><tbody>
+      ${SECTIONS.map((s,k)=>`<tr><td>${s.id}. ${s.name}</td><td>${per[k].r}</td><td>${per[k].w}</td><td>${per[k].r*MARKS}/${per[k].t*MARKS}</td></tr>`).join("")}
+    </tbody></table>`;
+  drawReview("all");
+  window.scrollTo(0,0);
+}
+function drawReview(f){
+  $("review").innerHTML = QUESTIONS.map((q,i)=>{
+    const a = S.ans[i], kind = a===null ? "s" : a===q.a ? "c" : "w";
+    if(f!=="all" && f!==kind) return "";
+    const badge = kind==="c" ? '<span class="badge ok">✓ सही</span>' : kind==="w" ? '<span class="badge bad">✗ गलत</span>' : '<span class="badge skip">— छोड़ा</span>';
+    return `<div class="rq"><p>${i+1}. ${q.q}${badge}</p>
+      ${q.o.map((o,j)=>`<div class="o ${j===q.a?"c":(j===a?"w":"")}">(${L[j]}) ${o}${j===a?" ← आपका उत्तर":""}</div>`).join("")}
+      <div class="e"><strong>व्याख्या:</strong> ${q.e}</div></div>`;
+  }).join("") || "<p>इस श्रेणी में कोई प्रश्न नहीं।</p>";
+}
+$("rfilters").onclick = e=>{
+  const b = e.target.closest("[data-r]"); if(!b) return;
+  document.querySelectorAll("#rfilters .tab").forEach(t=>t.classList.toggle("on", t===b));
+  drawReview(b.dataset.r);
+};
+$("retryBtn").onclick = ()=>{ clearSaved(); location.reload(); };
+
+/* पहले से जमा परीक्षा हो तो सीधे परिणाम दिखाएँ */
+if(saved && (saved.done || saved.endAt <= Date.now())){ S = saved; finish(saved.endAt <= Date.now() && !saved.done); }
+</script>
+</body>
+</html>
