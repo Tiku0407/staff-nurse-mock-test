@@ -42,6 +42,13 @@ table{width:100%;border-collapse:collapse;font-size:14px}
 th,td{border-bottom:1px solid var(--line);padding:8px;text-align:left;vertical-align:top}
 th{color:var(--muted);font-weight:600}
 input[type=text]{font:inherit;width:100%;max-width:360px;padding:9px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}
+input[type=tel]{font:inherit;width:100%;max-width:360px;padding:9px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}
+input.bad{border-color:var(--nans);outline:none}
+.field{margin-bottom:12px}
+.field label{display:block;margin-bottom:4px}
+.req{color:var(--nans);font-weight:700}
+.err{color:var(--nans);font-size:13px;min-height:18px;margin-top:3px}
+.note{font-size:13px;color:var(--muted);margin:4px 0 0}
 label.agree{display:flex;gap:8px;align-items:flex-start;margin:14px 0}
 .btn{border:0;border-radius:8px;padding:10px 18px;font-weight:600;background:var(--brand);color:var(--brand-ink)}
 .btn:disabled{opacity:.45;cursor:not-allowed}
@@ -136,8 +143,17 @@ label.agree{display:flex;gap:8px;align-items:flex-start;margin:14px 0}
       <table><thead><tr><th>खंड</th><th>विषय</th><th>प्रश्न</th><th>अंक</th></tr></thead><tbody id="secTable"></tbody></table>
     </div>
     <div class="panel">
-      <label for="cname"><strong>अभ्यर्थी का नाम</strong> (वैकल्पिक)</label><br>
-      <input type="text" id="cname" placeholder="अपना नाम लिखें">
+      <div class="field">
+        <label for="cname"><strong>अभ्यर्थी का नाम</strong> <span class="req">*</span></label>
+        <input type="text" id="cname" placeholder="अपना पूरा नाम लिखें" autocomplete="name" maxlength="60" required>
+        <div class="err" id="nameErr"></div>
+      </div>
+      <div class="field">
+        <label for="cmobile"><strong>मोबाइल नंबर</strong> <span class="req">*</span></label>
+        <input type="tel" id="cmobile" placeholder="10 अंकों का मोबाइल नंबर" inputmode="numeric" autocomplete="tel" maxlength="10" required>
+        <div class="err" id="mobErr"></div>
+      </div>
+      <p class="note"><span class="req">*</span> अनिवार्य — नाम और मोबाइल नंबर भरे बिना परीक्षा शुरू नहीं होगी। ये विवरण केवल आपके ब्राउज़र में रहते हैं और परिणाम पर दिखते हैं।</p>
       <label class="agree"><input type="checkbox" id="agree"> मैंने सभी निर्देश पढ़ लिए हैं और परीक्षा शुरू करने के लिए तैयार हूँ।</label>
       <button class="btn" id="startBtn" disabled>परीक्षा शुरू करें</button>
       <button class="btn ghost hidden" id="resumeBtn">अधूरी परीक्षा जारी रखें</button>
@@ -280,6 +296,7 @@ const QUESTIONS = [
 
 const L = ["क","ख","ग","घ"], MARKS = 2, DURATION = 60*60, KEY = "mock_"+PAPER_ID;
 const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 let S = null, tick = null;
 
 /* ---------- स्थिति सहेजना (रिफ्रेश होने पर भी परीक्षा बनी रहे) ---------- */
@@ -287,8 +304,8 @@ function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} 
 function load(){ try{ return JSON.parse(localStorage.getItem(KEY)); }catch(e){ return null; } }
 function clearSaved(){ try{ localStorage.removeItem(KEY); }catch(e){} }
 
-function newState(name){
-  return {name, cur:0, ans:Array(QUESTIONS.length).fill(null), visited:Array(QUESTIONS.length).fill(false),
+function newState(name, mobile){
+  return {name, mobile, cur:0, ans:Array(QUESTIONS.length).fill(null), visited:Array(QUESTIONS.length).fill(false),
           marked:Array(QUESTIONS.length).fill(false), endAt:Date.now()+DURATION*1000, startAt:Date.now(), done:false};
 }
 function status(i){
@@ -302,17 +319,49 @@ $("secTable").innerHTML = SECTIONS.map(s=>{
   const idx = QUESTIONS.map((q,i)=>q.s===s.id?i+1:0).filter(Boolean);
   return `<tr><td>${s.id}</td><td>${s.name}</td><td>${idx[0]}–${idx[idx.length-1]}</td><td>${idx.length*MARKS}</td></tr>`;
 }).join("");
-$("agree").onchange = e => $("startBtn").disabled = !e.target.checked;
+/* नाम और मोबाइल — अनिवार्य सत्यापन */
+function checkName(show){
+  const v = $("cname").value.trim().replace(/\s+/g," ");
+  let msg = "";
+  if(!v) msg = "नाम अनिवार्य है।";
+  else if(v.length < 3) msg = "कृपया पूरा नाम लिखें (कम से कम 3 अक्षर)।";
+  else if(/[0-9]/.test(v)) msg = "नाम में अंक नहीं होने चाहिए।";
+  if(show){ $("nameErr").textContent = msg; $("cname").classList.toggle("bad", !!msg); }
+  return msg ? null : v;
+}
+function checkMobile(show){
+  const v = $("cmobile").value.trim();
+  let msg = "";
+  if(!v) msg = "मोबाइल नंबर अनिवार्य है।";
+  else if(!/^\d{10}$/.test(v)) msg = "मोबाइल नंबर ठीक 10 अंकों का होना चाहिए।";
+  else if(!/^[6-9]/.test(v)) msg = "मान्य भारतीय मोबाइल नंबर 6, 7, 8 या 9 से शुरू होता है।";
+  if(show){ $("mobErr").textContent = msg; $("cmobile").classList.toggle("bad", !!msg); }
+  return msg ? null : v;
+}
+function refreshStart(){ $("startBtn").disabled = !($("agree").checked && checkName(false) && checkMobile(false)); }
+$("cmobile").addEventListener("input", e=>{ e.target.value = e.target.value.replace(/\D/g,"").slice(0,10); if($("mobErr").textContent) checkMobile(true); refreshStart(); });
+$("cname").addEventListener("input", ()=>{ if($("nameErr").textContent) checkName(true); refreshStart(); });
+$("cname").addEventListener("blur", ()=>checkName(true));
+$("cmobile").addEventListener("blur", ()=>checkMobile(true));
+$("agree").onchange = refreshStart;
+
 const saved = load();
-if(saved && !saved.done && saved.endAt > Date.now()){ $("resumeBtn").classList.remove("hidden"); }
-$("startBtn").onclick = ()=>{ S = newState($("cname").value.trim()); save(); startExam(); };
+if(saved && saved.name && saved.mobile && !saved.done && saved.endAt > Date.now()){
+  $("resumeBtn").textContent = "अधूरी परीक्षा जारी रखें ("+saved.name+")";
+  $("resumeBtn").classList.remove("hidden");
+}
+$("startBtn").onclick = ()=>{
+  const n = checkName(true), m = checkMobile(true);
+  if(!n || !m || !$("agree").checked){ (n ? $("cmobile") : $("cname")).focus(); return; }
+  S = newState(n, m); save(); startExam();
+};
 $("resumeBtn").onclick = ()=>{ S = saved; startExam(); };
 
 /* ---------- परीक्षा ---------- */
 function startExam(){
   $("startScreen").classList.add("hidden"); $("resultScreen").classList.add("hidden");
   $("examScreen").classList.remove("hidden");
-  $("whoLine").textContent = S.name ? "अभ्यर्थी: "+S.name : "";
+  $("whoLine").textContent = "अभ्यर्थी: "+S.name+" · मो. "+S.mobile;
   $("tabs").innerHTML = SECTIONS.map(s=>`<button class="tab" data-sec="${s.id}">खंड ${s.id}: ${s.short}</button>`).join("");
   show(S.cur); runTimer();
 }
@@ -375,7 +424,7 @@ function runTimer(){
 function finish(auto){
   clearInterval(tick); S.done = true; if(!S.finishedAt) S.finishedAt = Math.min(Date.now(), S.endAt); save();
   $("examScreen").classList.add("hidden"); $("resultScreen").classList.remove("hidden");
-  $("resWho").textContent = S.name ? "अभ्यर्थी: "+S.name : "";
+  $("resWho").textContent = "अभ्यर्थी: "+(S.name||"—")+" · मो. "+(S.mobile||"—");
   let r=0,w=0,sk=0; const per = SECTIONS.map(()=>({r:0,w:0,t:0}));
   QUESTIONS.forEach((q,i)=>{ const p=per[q.s-1]; p.t++;
     if(S.ans[i]===null) sk++; else if(S.ans[i]===q.a){r++;p.r++;} else {w++;p.w++;} });
@@ -384,6 +433,7 @@ function finish(auto){
   const verdict = pct>=80 ? "उत्कृष्ट — चयन स्तर की तैयारी।" : pct>=60 ? "अच्छा प्रयास — कमज़ोर खंड दोहराएँ।" : "संबंधित खंड दोबारा पढ़ें और कल फिर प्रयास करें।";
   $("scoreCard").innerHTML = `
     <h2>आपका स्कोर</h2>
+    <p style="margin:0 0 6px"><strong>${esc(S.name||"—")}</strong> · मोबाइल: ${esc(S.mobile||"—")}</p>
     <div class="score">${score} / ${max}</div>
     <p>${auto?"<strong>समय समाप्त — परीक्षा स्वतः जमा हुई।</strong> ":""}${verdict}</p>
     <table><tbody>
