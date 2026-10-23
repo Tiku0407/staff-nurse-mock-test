@@ -12,8 +12,7 @@
  * कोड बदलने पर: Deploy → Manage deployments → ✏ Edit → Version: New version → Deploy (URL वही रहता है)।
  */
 const SHEET_NAME = "Responses";
-const NQ = 50;                 // प्रति सेट प्रश्न
-const ID_COL = 20 + NQ;        // अंतिम कॉलम "प्रयास ID" (BR)
+const ID_COL = 15;             // अंतिम कॉलम "प्रयास ID" (O)
 
 function doPost(e) {
   const lock = LockService.getScriptLock();
@@ -31,19 +30,15 @@ function doPost(e) {
       if (found) return out({ ok: true, duplicate: true });
     }
 
-    const sec = Array.isArray(d.sec) ? d.sec : [];
-    const ans = Array.isArray(d.ans) ? d.ans : [];
     const row = [
       new Date(),
       num(d.set), txt(d.date, 30), txt(d.name, 60),
       "'" + String(d.mobile || "").replace(/\D/g, "").slice(0, 10),
       num(d.score), num(d.max), num(d.pct),
       num(d.right), num(d.wrong), num(d.skip), num(d.acc),
-      txt(d.time, 10), d.auto ? "हाँ" : "नहीं"
+      txt(d.time, 10), d.auto ? "हाँ" : "नहीं",
+      id
     ];
-    for (let k = 0; k < 5; k++) row.push(num(sec[k]));
-    for (let i = 0; i < NQ; i++) row.push(txt(ans[i], 4));
-    row.push(id);
     sh.appendRow(row);
     return out({ ok: true });
   } catch (err) {

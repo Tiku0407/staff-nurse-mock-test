@@ -168,7 +168,7 @@ body.lang-en .qtext-en{font-size:17px;font-weight:600;color:var(--ink)}
         <input type="tel" id="cmobile" placeholder="10 अंकों का मोबाइल नंबर" inputmode="numeric" autocomplete="tel" maxlength="10" required>
         <div class="err" id="mobErr"></div>
       </div>
-      <p class="note"><span class="req">*</span> अनिवार्य — नाम और मोबाइल नंबर भरे बिना परीक्षा शुरू नहीं होगी। ये विवरण परिणाम पर दिखते हैं, और परीक्षा जमा होने पर आपका नाम, मोबाइल, स्कोर व उत्तर तैयारी-विश्लेषण हेतु टेस्ट-संचालक की Google Sheet में सहेजे जाते हैं।</p>
+      <p class="note"><span class="req">*</span> अनिवार्य — नाम और मोबाइल नंबर भरे बिना परीक्षा शुरू नहीं होगी। ये विवरण परिणाम पर दिखते हैं, और परीक्षा जमा होने पर आपका नाम, मोबाइल व स्कोर तैयारी-विश्लेषण हेतु टेस्ट-संचालक की Google Sheet में सहेजे जाते हैं।</p>
       <label class="agree"><input type="checkbox" id="agree"> मैंने सभी निर्देश पढ़ लिए हैं और परीक्षा शुरू करने के लिए तैयार हूँ।</label>
       <button class="btn" id="startBtn" disabled>परीक्षा शुरू करें</button>
       <button class="btn ghost hidden" id="resumeBtn">अधूरी परीक्षा जारी रखें</button>
@@ -446,7 +446,7 @@ function finish(auto){
     </tbody></table>`;
   drawReview("all");
   window.scrollTo(0,0);
-  sendToSheet({score, max, pct, r, w, sk, acc, per, auto});
+  sendToSheet({score, max, pct, r, w, sk, acc, auto});
 }
 /* ---------- उत्तर-डेटा Google Sheet में (config.js का SHEET_URL; हर प्रयास केवल एक बार) ---------- */
 function sendToSheet(R){
@@ -456,9 +456,7 @@ function sendToSheet(R){
   const body = JSON.stringify({
     id:S.id, set:SET.n, date:SET.date, name:S.name, mobile:S.mobile,
     score:R.score, max:R.max, pct:R.pct, right:R.r, wrong:R.w, skip:R.sk, acc:R.acc,
-    time:fmt(Math.round((S.finishedAt-S.startAt)/1000)), auto:!!R.auto,
-    sec:R.per.map(p=>p.r*MARKS),
-    ans:QUESTIONS.map((q,i)=> S.ans[i]===null ? "—" : L[S.ans[i]]+(S.ans[i]===q.a?" ✓":" ✗"))
+    time:fmt(Math.round((S.finishedAt-S.startAt)/1000)), auto:!!R.auto
   });
   fetch(url, {method:"POST", mode:"no-cors", keepalive:true, headers:{"Content-Type":"text/plain;charset=utf-8"}, body})
     .then(()=>{ S.sent = true; save(); }).catch(()=>{});
