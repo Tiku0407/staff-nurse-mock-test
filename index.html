@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>स्टाफ नर्स लाइव मॉक टेस्ट — दिन 1</title>
+<title>स्टाफ नर्स लाइव मॉक टेस्ट</title>
 <meta name="description" content="छत्तीसगढ़ स्टाफ नर्स भर्ती परीक्षा हेतु CBT शैली लाइव मॉक टेस्ट — 50 प्रश्न, 100 अंक, 60 मिनट, उत्तर व्याख्या सहित।">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;600;700&display=swap" rel="stylesheet">
@@ -42,6 +42,7 @@ table{width:100%;border-collapse:collapse;font-size:14px}
 th,td{border-bottom:1px solid var(--line);padding:8px;text-align:left;vertical-align:top}
 th{color:var(--muted);font-weight:600}
 input[type=text]{font:inherit;width:100%;max-width:360px;padding:9px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}
+select{font:inherit;width:100%;max-width:360px;padding:9px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}
 input[type=tel]{font:inherit;width:100%;max-width:360px;padding:9px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}
 input.bad{border-color:var(--nans);outline:none}
 .field{margin-bottom:12px}
@@ -66,7 +67,16 @@ label.agree{display:flex;gap:8px;align-items:flex-start;margin:14px 0}
 .qhead{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid var(--line);font-size:14px;color:var(--muted)}
 .qhead strong{color:var(--ink);font-size:16px}
 .qbody{padding:18px 16px;flex:1}
-.qtext{font-size:17px;font-weight:600;margin:0 0 16px}
+.qtext{font-size:17px;font-weight:600;margin:0 0 4px}
+.qtext-en{font-size:15px;color:var(--muted);margin:0 0 16px;line-height:1.5}
+.en{display:block;font-size:13px;color:var(--muted);line-height:1.4}
+.rq .qe{display:block;font-weight:400;font-size:14px;color:var(--muted)}
+body.lang-hi .en, body.lang-hi .qtext-en, body.lang-hi .rq .qe{display:none}
+body.lang-en .hi{display:none}
+body:not(.lang-en) .en.same{display:none}
+body.lang-en .en{font-size:inherit;color:inherit}
+body.lang-en .qtext-en{font-size:17px;font-weight:600;color:var(--ink)}
+.langsel{font:inherit;font-size:13px;padding:3px 6px;border-radius:6px;border:1px solid var(--line);background:var(--bg);color:var(--ink);width:auto;max-width:none}
 .opt{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:8px;padding:11px 12px;margin-bottom:9px;cursor:pointer}
 .opt:hover{border-color:var(--brand)}
 .opt.sel{border-color:var(--brand);background:var(--brand-soft)}
@@ -119,7 +129,7 @@ label.agree{display:flex;gap:8px;align-items:flex-start;margin:14px 0}
 
 <!-- ===== प्रारंभ स्क्रीन ===== -->
 <div id="startScreen">
-  <div class="topbar"><h1>स्टाफ नर्स लाइव मॉक टेस्ट · दिन 1</h1><span class="who">CBT अभ्यास</span></div>
+  <div class="topbar"><h1>स्टाफ नर्स लाइव मॉक टेस्ट · <span class="setLabel">…</span></h1><span class="who">CBT अभ्यास</span></div>
   <div class="page">
     <div class="panel">
       <h2>परीक्षा निर्देश</h2>
@@ -144,6 +154,11 @@ label.agree{display:flex;gap:8px;align-items:flex-start;margin:14px 0}
     </div>
     <div class="panel">
       <div class="field">
+        <label for="setSel"><strong>टेस्ट सेट</strong></label>
+        <select id="setSel"></select>
+        <div class="note">हर सुबह नया सेट जुड़ता है; पुराने सेट भी यहाँ से दोबारा दे सकते हैं।</div>
+      </div>
+      <div class="field">
         <label for="cname"><strong>अभ्यर्थी का नाम</strong> <span class="req">*</span></label>
         <input type="text" id="cname" placeholder="अपना पूरा नाम लिखें" autocomplete="name" maxlength="60" required>
         <div class="err" id="nameErr"></div>
@@ -164,7 +179,7 @@ label.agree{display:flex;gap:8px;align-items:flex-start;margin:14px 0}
 <!-- ===== परीक्षा स्क्रीन ===== -->
 <div id="examScreen" class="hidden">
   <div class="topbar">
-    <div><h1>स्टाफ नर्स लाइव मॉक टेस्ट · दिन 1</h1><span class="who" id="whoLine"></span></div>
+    <div><h1>स्टाफ नर्स लाइव मॉक टेस्ट · <span class="setLabel">…</span></h1><span class="who" id="whoLine"></span></div>
     <div style="display:flex;gap:10px;align-items:center">
       <button class="btn ghost palette-toggle" style="color:inherit;border-color:rgba(255,255,255,.5)" id="palToggle">पैलेट</button>
       <span class="timer" id="timer">60:00</span>
@@ -173,9 +188,10 @@ label.agree{display:flex;gap:8px;align-items:flex-start;margin:14px 0}
   <div class="exam">
     <div class="qpane">
       <div class="tabs" id="tabs"></div>
-      <div class="qhead"><strong id="qno"></strong><span id="qmeta">+2 अंक · 0 नकारात्मक</span></div>
+      <div class="qhead"><strong id="qno"></strong><span id="qmeta">+2 अंक · 0 नकारात्मक · <select class="langsel" id="langSel" aria-label="भाषा / Language"><option value="both">हिंदी + English</option><option value="hi">केवल हिंदी</option><option value="en">English only</option></select></span></div>
       <div class="qbody">
-        <p class="qtext" id="qtext"></p>
+        <p class="qtext hi" id="qtext"></p>
+        <p class="qtext-en" id="qtextEn"></p>
         <div id="opts"></div>
       </div>
       <div class="qfoot">
@@ -206,7 +222,7 @@ label.agree{display:flex;gap:8px;align-items:flex-start;margin:14px 0}
 
 <!-- ===== परिणाम स्क्रीन ===== -->
 <div id="resultScreen" class="hidden">
-  <div class="topbar"><h1>परिणाम · स्टाफ नर्स मॉक टेस्ट दिन 1</h1><span class="who" id="resWho"></span></div>
+  <div class="topbar"><h1>परिणाम · स्टाफ नर्स मॉक टेस्ट · <span class="setLabel">…</span></h1><span class="who" id="resWho"></span></div>
   <div class="page">
     <div class="panel" id="scoreCard"></div>
     <div class="panel">
@@ -227,7 +243,46 @@ label.agree{display:flex;gap:8px;align-items:flex-start;margin:14px 0}
 </div>
 
 <script>
-const PAPER_ID = "cg-staff-nurse-day-01";
+/* ---------- सेट लोड करना: sets/manifest.js → sets/set-NN.js ---------- */
+const pad2 = n => String(n).padStart(2,"0");
+function loadScript(src){ return new Promise((ok,bad)=>{ const s=document.createElement("script"); s.src=src; s.onload=ok; s.onerror=bad; document.body.appendChild(s); }); }
+function bootFail(msg){ document.querySelector("#startScreen .page").insertAdjacentHTML("afterbegin", `<div class="panel" style="border-color:var(--nans)"><strong>${msg}</strong></div>`); }
+loadScript("sets/manifest.js?t="+Date.now()).then(()=>{
+  const sets = (window.SETS||[]).slice().sort((a,b)=>a.n-b.n);
+  if(!sets.length) return bootFail("कोई टेस्ट सेट नहीं मिला।");
+  const want = +new URLSearchParams(location.search).get("set");
+  const latest = sets[sets.length-1], cur = sets.find(s=>s.n===want) || latest;
+  const sel = document.getElementById("setSel");
+  sel.innerHTML = sets.slice().reverse().map(s=>`<option value="${s.n}" ${s===cur?"selected":""}>सेट ${pad2(s.n)} — ${s.date}${s===latest?" (नवीनतम)":""}</option>`).join("");
+  sel.onchange = ()=>{ location.search = "?set="+sel.value; };
+  return loadScript("sets/"+cur.file+"?v="+cur.n).then(()=>main(cur));
+}).catch(()=>bootFail("टेस्ट लोड नहीं हो सका। इंटरनेट कनेक्शन जाँचकर पेज रिफ्रेश करें।"));
+
+function main(cur){
+const SET = window.SET_DATA;
+const QUESTIONS = SET.questions;
+const PAPER_ID = "cg-staff-nurse-set-"+pad2(SET.n);
+const LABEL = "सेट "+pad2(SET.n)+" · "+SET.date;
+document.querySelectorAll(".setLabel").forEach(e=>e.textContent=LABEL);
+document.title = "स्टाफ नर्स लाइव मॉक टेस्ट — "+LABEL;
+const LE = ["(a)","(b)","(c)","(d)"];
+/* अंग्रेज़ी विकल्प: हिंदी जैसा ही हो (जैसे संख्या) तो दोबारा न दिखाएँ, पर "English only" में दिखाएँ */
+function enOpt(q,j){
+  if(!q.oe) return "";
+  const same = String(q.oe[j]).trim()===String(q.o[j]).trim();
+  return `<span class="en${same?" same":""}">${LE[j]} ${esc(q.oe[j])}</span>`;
+}
+function setLang(v){
+  document.body.classList.remove("lang-hi","lang-en");
+  if(v==="hi"||v==="en") document.body.classList.add("lang-"+v);
+  try{ localStorage.setItem("mock_lang", v); }catch(e){}
+  const ls=document.getElementById("langSel"); if(ls) ls.value=v;
+}
+let _lang="both"; try{ _lang = localStorage.getItem("mock_lang") || "both"; }catch(e){}
+if(!QUESTIONS.some(q=>q.qe)) _lang="hi";
+setLang(_lang);
+document.getElementById("langSel").onchange = e=>setLang(e.target.value);
+
 const SECTIONS = [
   {id:1, short:"फंडामेंटल्स/मेडिकल", name:"एनाटॉमी, फिजियोलॉजी, माइक्रोबायोलॉजी, फंडामेंटल्स, मेडिकल-सर्जिकल एवं OBG"},
   {id:2, short:"सामुदायिक/पोषण", name:"सामुदायिक स्वास्थ्य नर्सिंग एवं पोषण"},
@@ -236,63 +291,6 @@ const SECTIONS = [
   {id:5, short:"शिक्षा/प्रशासन", name:"नर्सिंग शिक्षा एवं नर्सिंग प्रशासन"}
 ];
 
-// a = सही विकल्प का index (0=क, 1=ख, 2=ग, 3=घ)
-const QUESTIONS = [
- {s:1,q:"स्वस्थ व्यक्ति के धमनी रक्त (Arterial blood) का सामान्य pH कितना होता है?",o:["7.00–7.20","7.35–7.45","7.50–7.60","6.80–7.00"],a:1,e:"सामान्य रक्त pH 7.35–7.45; 7.35 से कम अम्लरक्तता, 7.45 से अधिक क्षारमयता।"},
- {s:1,q:"शरीर pH 7.4 बनाए रखने के लिए बाइकार्बोनेट (HCO₃⁻) और कार्बोनिक एसिड (H₂CO₃) का अनुपात कितना रखता है?",o:["1:20","10:1","20:1","1:1"],a:2,e:"HCO₃⁻ : H₂CO₃ = 20:1 (लगभग 24 : 1.2 mEq/L); यह प्राथमिक बफर है।"},
- {s:1,q:"किसी मरीज़ की ABG रिपोर्ट: pH 7.49, PaCO₂ 30 mmHg, HCO₃⁻ 25 mEq/L। यह किस स्थिति को दर्शाती है?",o:["श्वसन अम्लरक्तता (Respiratory acidosis)","चयापचयी क्षारमयता (Metabolic alkalosis)","श्वसन क्षारमयता (Respiratory alkalosis)","चयापचयी अम्लरक्तता (Metabolic acidosis)"],a:2,e:"pH बढ़ा और PaCO₂ घटा (सामान्य 35–45), HCO₃⁻ सामान्य (22–26) → श्वसन क्षारमयता।"},
- {s:1,q:"रेडियल धमनी से ABG सैंपल लेने से पहले कौन-सा परीक्षण किया जाता है?",o:["रोम्बर्ग टेस्ट","एलेन टेस्ट (Allen's test)","ट्रेंडेलनबर्ग टेस्ट","मैंटॉक्स टेस्ट"],a:1,e:"एलेन टेस्ट अल्नर धमनी से हाथ के कोलैटरल रक्त-प्रवाह की जाँच करता है।"},
- {s:1,q:"मधुमेह कीटोएसिडोसिस (DKA) में दिखने वाला गहरा व तेज़ श्वसन क्या कहलाता है?",o:["चेन-स्टोक्स श्वसन","बायोट श्वसन","कुसमॉल श्वसन (Kussmaul's respiration)","एप्निया"],a:2,e:"चयापचयी अम्लरक्तता में शरीर CO₂ बाहर निकालने हेतु गहरी-तेज़ कुसमॉल श्वसन करता है।"},
- {s:1,q:"नवजात शिशु के APGAR स्कोर में कितने मापदंड (criteria) जाँचे जाते हैं?",o:["3","4","5","10"],a:2,e:"5 मापदंड: हृदय गति, श्वसन प्रयास, मांसपेशी टोन, रिफ्लेक्स, रंग; अधिकतम स्कोर 10।"},
- {s:1,q:"मानव शरीर की सबसे लंबी और सबसे मज़बूत अस्थि कौन-सी है?",o:["टिबिया","ह्यूमरस","फीमर","फिबुला"],a:2,e:"फीमर (जांघ की अस्थि) सबसे लंबी व मज़बूत अस्थि है।"},
- {s:1,q:"ऑटोक्लेव (Autoclave) द्वारा स्टेरिलाइज़ेशन का मानक तापमान और दबाव क्या है?",o:["100°C, 5 psi","121°C, 15 psi","160°C, 30 psi","80°C, 10 psi"],a:1,e:"ऑटोक्लेव: 121°C, 15 psi, सामान्यतः 15–20 मिनट।"},
- {s:1,q:"श्वसन क्षारमयता (Respiratory alkalosis) के कारण टिटनी (Tetany) होने पर कौन-सा इंजेक्शन दिया जाता है?",o:["पोटैशियम क्लोराइड","सोडियम बाइकार्बोनेट","कैल्शियम ग्लूकोनेट","मैग्नीशियम सल्फेट"],a:2,e:"क्षारमयता में आयनित कैल्शियम घटता है, इसलिए कैल्शियम ग्लूकोनेट दिया जाता है।"},
- {s:1,q:"एनाफिलैक्टिक शॉक (Anaphylactic shock) में सबसे पहले दी जाने वाली दवा कौन-सी है?",o:["एड्रेनालिन (Adrenaline)","एट्रोपिन","डोपामिन","डायजेपाम"],a:0,e:"एड्रेनालिन (1:1000, IM) एनाफिलैक्सिस की पहली दवा है।"},
-
- {s:2,q:"प्राथमिक स्वास्थ्य देखभाल (Primary Health Care) पर अल्मा-अता घोषणा किस वर्ष हुई थी?",o:["1948","1966","1978","1983"],a:2,e:"अल्मा-अता (USSR) घोषणा, सितंबर 1978: 'सबके लिए स्वास्थ्य'।"},
- {s:2,q:"मैदानी क्षेत्र में एक प्राथमिक स्वास्थ्य केंद्र (PHC) कितनी जनसंख्या पर स्थापित किया जाता है?",o:["5,000","20,000","30,000","1,20,000"],a:2,e:"PHC: मैदानी 30,000; पहाड़ी/जनजातीय क्षेत्र 20,000।"},
- {s:2,q:"मैदानी क्षेत्र में एक उप-स्वास्थ्य केंद्र (Sub-centre) कितनी जनसंख्या पर होता है?",o:["1,000","3,000","5,000","10,000"],a:2,e:"उप-केंद्र: मैदानी 5,000; पहाड़ी/जनजातीय 3,000।"},
- {s:2,q:"BCG टीका किस मार्ग (route) से दिया जाता है?",o:["इंट्रामस्कुलर","सबक्यूटेनियस","इंट्राडर्मल","मौखिक"],a:2,e:"BCG 0.05 ml (नवजात) / 0.1 ml, बाएँ कंधे पर इंट्राडर्मल।"},
- {s:2,q:"राष्ट्रीय टीकाकरण कार्यक्रम में MR (Measles-Rubella) टीके की पहली खुराक किस आयु में दी जाती है?",o:["जन्म के समय","6 सप्ताह","9–12 माह","5 वर्ष"],a:2,e:"MR-1: 9–12 माह; MR-2: 16–24 माह।"},
- {s:2,q:"कॉपर-T 380A कितने वर्षों तक प्रभावी रहता है?",o:["3 वर्ष","5 वर्ष","10 वर्ष","15 वर्ष"],a:2,e:"Cu-T 380A 10 वर्ष तक; Cu-T 375 पाँच वर्ष तक प्रभावी।"},
- {s:2,q:"रतौंधी (Night blindness) किस विटामिन की कमी से होती है?",o:["विटामिन A","विटामिन B₁","विटामिन C","विटामिन D"],a:0,e:"विटामिन A की कमी: रतौंधी, बिटॉट स्पॉट, ज़ेरोफ्थैल्मिया।"},
- {s:2,q:"1 ग्राम वसा (Fat) से कितनी ऊर्जा प्राप्त होती है?",o:["4 kcal","7 kcal","9 kcal","12 kcal"],a:2,e:"वसा 9 kcal/g; प्रोटीन व कार्बोहाइड्रेट 4 kcal/g।"},
- {s:2,q:"स्कर्वी (Scurvy) रोग किसकी कमी से होता है?",o:["विटामिन K","विटामिन C","आयरन","आयोडीन"],a:1,e:"विटामिन C की कमी से मसूड़ों से खून, स्कर्वी।"},
- {s:2,q:"क्वाशियोरकोर (Kwashiorkor) मुख्यतः किसकी कमी से होता है?",o:["कार्बोहाइड्रेट","वसा","प्रोटीन","कैल्शियम"],a:2,e:"क्वाशियोरकोर = प्रोटीन की कमी (शोथ सहित); मरास्मस = प्रोटीन-ऊर्जा दोनों की कमी।"},
-
- {s:3,q:"इलेक्ट्रो-कन्वल्सिव थेरेपी (ECT) का सबसे प्रमुख संकेत (indication) क्या है?",o:["चिंता विकार","आत्महत्या की प्रवृत्ति वाला गंभीर अवसाद","व्यक्तित्व विकार","मानसिक मंदता"],a:1,e:"ECT गंभीर व आत्महत्या-प्रवृत्ति वाले अवसाद में सबसे प्रभावी है।"},
- {s:3,q:"लिथियम (Lithium) का सामान्य चिकित्सीय सीरम स्तर कितना होता है?",o:["0.1–0.3 mEq/L","0.6–1.2 mEq/L","2.0–3.0 mEq/L","3.5–5.0 mEq/L"],a:1,e:"लिथियम चिकित्सीय स्तर 0.6–1.2 mEq/L; 1.5 से ऊपर विषाक्तता का खतरा।"},
- {s:3,q:"भारत में मानसिक स्वास्थ्य देखभाल अधिनियम (Mental Healthcare Act) किस वर्ष पारित हुआ?",o:["1912","1987","2005","2017"],a:3,e:"मानसिक स्वास्थ्य देखभाल अधिनियम 2017; इससे पहले मानसिक स्वास्थ्य अधिनियम 1987।"},
- {s:3,q:"अपनी अस्वीकार्य भावनाओं या दोषों को दूसरों पर आरोपित करना कौन-सा रक्षा तंत्र (Defence mechanism) है?",o:["प्रक्षेपण (Projection)","दमन (Repression)","प्रतिगमन (Regression)","उदात्तीकरण (Sublimation)"],a:0,e:"प्रक्षेपण में व्यक्ति अपने दोष दूसरों पर डालता है।"},
- {s:3,q:"'सिज़ोफ्रेनिया' (Schizophrenia) शब्द सबसे पहले किसने दिया?",o:["सिगमंड फ्रायड","यूजेन ब्लूलर","एमिल क्रेपलिन","कार्ल जुंग"],a:1,e:"यूजेन ब्लूलर (1911); क्रेपलिन ने इसे 'डिमेंशिया प्रीकॉक्स' कहा था।"},
- {s:3,q:"मास्लो की आवश्यकता पदानुक्रम (Hierarchy of needs) में सबसे निचले स्तर पर कौन-सी आवश्यकता है?",o:["सुरक्षा","आत्म-सम्मान","शारीरिक/दैहिक (Physiological)","आत्म-सिद्धि"],a:2,e:"सबसे नीचे शारीरिक आवश्यकताएँ (भोजन, जल, ऑक्सीजन), सबसे ऊपर आत्म-सिद्धि।"},
- {s:3,q:"बुद्धि लब्धि (IQ) का सूत्र क्या है?",o:["(वास्तविक आयु ÷ मानसिक आयु) × 100","(मानसिक आयु ÷ वास्तविक आयु) × 100","मानसिक आयु × वास्तविक आयु","(मानसिक आयु − वास्तविक आयु) × 10"],a:1,e:"IQ = (मानसिक आयु ÷ वास्तविक आयु) × 100 (विलियम स्टर्न)।"},
- {s:3,q:"डेलिरियम ट्रेमेंस (Delirium tremens) किससे संबंधित है?",o:["अफीम का अधिक सेवन","शराब छोड़ने पर होने वाले लक्षण (Alcohol withdrawal)","सिज़ोफ्रेनिया","मिर्गी"],a:1,e:"शराब छोड़ने के 48–72 घंटे बाद भ्रम, कंपन, मतिभ्रम।"},
- {s:3,q:"पति, पत्नी और उनके अविवाहित बच्चों वाला परिवार क्या कहलाता है?",o:["संयुक्त परिवार","विस्तारित परिवार","एकल परिवार (Nuclear family)","मातृसत्तात्मक परिवार"],a:2,e:"एकल/नाभिकीय परिवार: पति-पत्नी व अविवाहित संतान।"},
- {s:3,q:"'समाजशास्त्र का जनक' (Father of Sociology) किसे कहा जाता है?",o:["ऑगस्ट कॉम्टे","कार्ल मार्क्स","मैक्स वेबर","एमिल दुर्खीम"],a:0,e:"ऑगस्ट कॉम्टे ने 'Sociology' शब्द दिया।"},
-
- {s:4,q:"भारतीय नर्सिंग परिषद (Indian Nursing Council) की स्थापना किस अधिनियम/वर्ष में हुई?",o:["1935","1947","1950","1962"],a:1,e:"INC का गठन भारतीय नर्सिंग परिषद अधिनियम 1947 के अंतर्गत हुआ।"},
- {s:4,q:"अंतर्राष्ट्रीय नर्स दिवस (International Nurses Day) किस तिथि को मनाया जाता है?",o:["7 अप्रैल","12 मई","1 जुलाई","13 अगस्त"],a:1,e:"12 मई फ्लोरेंस नाइटिंगेल का जन्मदिवस (1820) है।"},
- {s:4,q:"फ्लोरेंस नाइटिंगेल द्वारा स्थापित पहला नर्सिंग स्कूल किस अस्पताल में था?",o:["सेंट थॉमस अस्पताल, लंदन","जॉन्स हॉपकिन्स, अमेरिका","गाय्ज़ अस्पताल, लंदन","स्कुटारी अस्पताल, तुर्की"],a:0,e:"नाइटिंगेल ट्रेनिंग स्कूल, सेंट थॉमस अस्पताल, लंदन (1860)।"},
- {s:4,q:"अंतर्राष्ट्रीय नर्स परिषद (ICN) का मुख्यालय कहाँ है?",o:["न्यूयॉर्क","लंदन","जिनेवा","पेरिस"],a:2,e:"ICN (स्थापना 1899) का मुख्यालय जिनेवा, स्विट्ज़रलैंड।"},
- {s:4,q:"किसी आँकड़ा समूह में सबसे अधिक बार आने वाला मान क्या कहलाता है?",o:["माध्य (Mean)","माध्यिका (Median)","बहुलक (Mode)","परास (Range)"],a:2,e:"बहुलक (Mode) सबसे अधिक बार आने वाला मान है।"},
- {s:4,q:"शोध में जिस चर (variable) को शोधकर्ता नियंत्रित या परिवर्तित करता है, उसे क्या कहते हैं?",o:["आश्रित चर (Dependent)","स्वतंत्र चर (Independent)","बाह्य चर (Extraneous)","मध्यस्थ चर"],a:1,e:"स्वतंत्र चर बदला जाता है; उसका प्रभाव आश्रित चर पर मापा जाता है।"},
- {s:4,q:"आँकड़े 2, 4, 4, 6, 9 की माध्यिका (Median) क्या है?",o:["4","5","6","4.5"],a:0,e:"क्रमबद्ध आँकड़ों का बीच वाला (तीसरा) मान 4 है।"},
- {s:4,q:"MS Excel की फ़ाइल को क्या कहा जाता है?",o:["डॉक्यूमेंट","प्रेज़ेंटेशन","वर्कबुक (Workbook)","डेटाबेस"],a:2,e:"Excel फ़ाइल = वर्कबुक, जिसमें कई वर्कशीट होती हैं।"},
- {s:4,q:"बिजली बंद होने पर जिस मेमोरी का डेटा मिट जाता है, वह कौन-सी है?",o:["ROM","RAM","हार्ड डिस्क","पेन ड्राइव"],a:1,e:"RAM अस्थायी (Volatile) मेमोरी है; ROM स्थायी है।"},
- {s:4,q:"कंप्यूटर में Ctrl + Z शॉर्टकट का उपयोग किसलिए होता है?",o:["सेव","कॉपी","अंडू (Undo)","प्रिंट"],a:2,e:"Ctrl + Z = Undo; Ctrl + Y = Redo।"},
-
- {s:5,q:"प्रशासन के कार्यों का सूत्र POSDCORB किसने दिया?",o:["हेनरी फेयोल","लूथर गुलिक","एफ. डब्ल्यू. टेलर","पीटर ड्रकर"],a:1,e:"लूथर गुलिक (1937): Planning, Organizing, Staffing, Directing, Coordinating, Reporting, Budgeting।"},
- {s:5,q:"हेनरी फेयोल ने प्रबंधन के कितने सिद्धांत (Principles of management) दिए?",o:["5","7","12","14"],a:3,e:"फेयोल ने 14 सिद्धांत दिए; उन्हें आधुनिक प्रबंधन का जनक कहा जाता है।"},
- {s:5,q:"प्रबंधन (Management) का पहला और आधारभूत कार्य कौन-सा है?",o:["संगठन","नियोजन (Planning)","निर्देशन","नियंत्रण"],a:1,e:"नियोजन सभी प्रबंधकीय कार्यों का आधार है।"},
- {s:5,q:"'आदेश की एकता' (Unity of command) का अर्थ है—",o:["सभी कर्मचारी एक साथ काम करें","एक कर्मचारी केवल एक ही अधिकारी से आदेश प्राप्त करे","एक अधिकारी के अधीन सभी विभाग हों","सभी निर्णय समिति द्वारा लिए जाएँ"],a:1,e:"एक कर्मचारी का एक ही वरिष्ठ अधिकारी होना चाहिए।"},
- {s:5,q:"एक पर्यवेक्षक जितने अधीनस्थों को प्रभावी ढंग से नियंत्रित कर सके, उसे क्या कहते हैं?",o:["अधिकार रेखा (Line of authority)","नियंत्रण का विस्तार (Span of control)","प्रत्यायोजन (Delegation)","केंद्रीकरण"],a:1,e:"Span of control = एक पर्यवेक्षक के अधीन प्रभावी अधीनस्थों की संख्या।"},
- {s:5,q:"जिस नेतृत्व शैली में सभी निर्णय नेता स्वयं लेता है और अधीनस्थों से परामर्श नहीं करता, वह कौन-सी है?",o:["लोकतांत्रिक","निरंकुश (Autocratic)","लैसे-फेयर","सहभागी"],a:1,e:"निरंकुश नेतृत्व में अधिकार और निर्णय नेता के पास केंद्रित रहते हैं।"},
- {s:5,q:"इन्वेंटरी नियंत्रण में VED विश्लेषण किस आधार पर किया जाता है?",o:["वस्तु की कीमत","वस्तु की उपयोगिता/अनिवार्यता (Vital, Essential, Desirable)","वस्तु का भार","खरीद की तिथि"],a:1,e:"VED = अनिवार्यता के आधार पर; ABC = लागत/मूल्य के आधार पर।"},
- {s:5,q:"नर्सिंग छात्रों को मनोप्रेरक (Psychomotor) कौशल, जैसे इंजेक्शन लगाना, सिखाने के लिए सबसे उपयुक्त शिक्षण विधि कौन-सी है?",o:["व्याख्यान (Lecture)","सेमिनार","प्रदर्शन (Demonstration)","पैनल चर्चा"],a:2,e:"कौशल सिखाने हेतु प्रदर्शन व पुनः-प्रदर्शन (Return demonstration) सर्वोत्तम है।"},
- {s:5,q:"ब्लूम की वर्गिकी (Bloom's taxonomy) का भावात्मक (Affective) क्षेत्र किससे संबंधित है?",o:["ज्ञान और समझ","अभिवृत्ति, भावनाएँ और मूल्य","हाथ के कौशल","स्मरण शक्ति"],a:1,e:"Cognitive = ज्ञान, Affective = अभिवृत्ति/मूल्य, Psychomotor = कौशल।"},
- {s:5,q:"नर्सिंग शिक्षा में मूल्यांकन हेतु प्रयुक्त OSCE का पूर्ण रूप क्या है?",o:["Objective Structured Clinical Examination","Oral Standard Clinical Evaluation","Overall Skill Competency Exam","Objective Subject Clinical Evaluation"],a:0,e:"OSCE = Objective Structured Clinical Examination (हार्डन, 1975)।"}
-];
 
 const L = ["क","ख","ग","घ"], MARKS = 2, DURATION = 60*60, KEY = "mock_"+PAPER_ID;
 const $ = id => document.getElementById(id);
@@ -370,8 +368,9 @@ function show(i){
   const q = QUESTIONS[i];
   $("qno").textContent = `प्रश्न ${i+1} / ${QUESTIONS.length}`;
   $("qtext").textContent = q.q;
+  $("qtextEn").textContent = q.qe || "";
   $("opts").innerHTML = q.o.map((o,j)=>
-    `<label class="opt ${S.ans[i]===j?"sel":""}"><input type="radio" name="opt" value="${j}" ${S.ans[i]===j?"checked":""}><span>(${L[j]}) ${o}</span></label>`).join("");
+    `<label class="opt ${S.ans[i]===j?"sel":""}"><input type="radio" name="opt" value="${j}" ${S.ans[i]===j?"checked":""}><span><span class="hi">(${L[j]}) ${o}</span>${enOpt(q,j)}</span></label>`).join("");
   document.querySelectorAll(".tab[data-sec]").forEach(t=>t.classList.toggle("on", +t.dataset.sec===q.s));
   $("prevBtn").disabled = i===0;
   drawPalette(); save();
@@ -453,8 +452,8 @@ function drawReview(f){
     const a = S.ans[i], kind = a===null ? "s" : a===q.a ? "c" : "w";
     if(f!=="all" && f!==kind) return "";
     const badge = kind==="c" ? '<span class="badge ok">✓ सही</span>' : kind==="w" ? '<span class="badge bad">✗ गलत</span>' : '<span class="badge skip">— छोड़ा</span>';
-    return `<div class="rq"><p>${i+1}. ${q.q}${badge}</p>
-      ${q.o.map((o,j)=>`<div class="o ${j===q.a?"c":(j===a?"w":"")}">(${L[j]}) ${o}${j===a?" ← आपका उत्तर":""}</div>`).join("")}
+    return `<div class="rq"><p>${i+1}. ${q.q}${badge}${q.qe?`<span class="qe">${esc(q.qe)}</span>`:""}</p>
+      ${q.o.map((o,j)=>`<div class="o ${j===q.a?"c":(j===a?"w":"")}"><span class="hi">(${L[j]}) ${o}</span>${enOpt(q,j)}${j===a?" ← आपका उत्तर / Your answer":""}</div>`).join("")}
       <div class="e"><strong>व्याख्या:</strong> ${q.e}</div></div>`;
   }).join("") || "<p>इस श्रेणी में कोई प्रश्न नहीं।</p>";
 }
@@ -467,6 +466,8 @@ $("retryBtn").onclick = ()=>{ clearSaved(); location.reload(); };
 
 /* पहले से जमा परीक्षा हो तो सीधे परिणाम दिखाएँ */
 if(saved && (saved.done || saved.endAt <= Date.now())){ S = saved; finish(saved.endAt <= Date.now() && !saved.done); }
+
+} // main
 </script>
 </body>
 </html>
