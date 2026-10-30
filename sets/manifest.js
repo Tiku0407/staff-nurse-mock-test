@@ -6,5 +6,6 @@ window.SETS = [
   {n: 4, date: "25 अक्टूबर 2026", file: "set-04.js"},
   {n: 5, date: "26 अक्टूबर 2026", file: "set-05.js"},
   {n: 6, date: "28 अक्टूबर 2026", file: "set-06.js"},
-  {n: 7, date: "29 अक्टूबर 2026", file: "set-07.js"}
+  {n: 7, date: "29 अक्टूबर 2026", file: "set-07.js"},
+  {n: 8, date: "30 अक्टूबर 2026", file: "set-08.js"}
 ];
