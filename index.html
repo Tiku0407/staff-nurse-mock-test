@@ -103,6 +103,10 @@ body.lang-en .qtext-en{font-size:17px;font-weight:600;color:var(--ink)}
 
 /* परिणाम */
 .score{font-size:40px;font-weight:700;color:var(--brand);line-height:1.2}
+#thanksCard{text-align:center}
+#thanksCard img{width:100%;max-width:540px;height:auto;border-radius:12px;box-shadow:0 4px 18px rgba(0,0,0,.15);display:block;margin:0 auto 12px}
+#thanksCard .btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+#thanksCard a.btn{text-decoration:none;display:inline-block}
 .rq{border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:10px;background:var(--card)}
 .rq p{margin:0 0 8px;font-weight:600}
 .rq .o{padding:5px 10px;border-radius:6px;margin:3px 0;font-size:14px}
@@ -224,6 +228,7 @@ body.lang-en .qtext-en{font-size:17px;font-weight:600;color:var(--ink)}
 <div id="resultScreen" class="hidden">
   <div class="topbar"><h1>परिणाम · स्टाफ नर्स मॉक टेस्ट · <span class="setLabel">…</span></h1><span class="who" id="resWho"></span></div>
   <div class="page">
+    <div class="panel no-print" id="thanksCard"></div>
     <div class="panel" id="scoreCard"></div>
     <div class="panel">
       <h2>उत्तर समीक्षा</h2>
@@ -444,9 +449,95 @@ function finish(auto){
     <table><thead><tr><th>खंड</th><th>सही</th><th>गलत</th><th>अंक</th></tr></thead><tbody>
       ${SECTIONS.map((s,k)=>`<tr><td>${s.id}. ${s.name}</td><td>${per[k].r}</td><td>${per[k].w}</td><td>${per[k].r*MARKS}/${per[k].t*MARKS}</td></tr>`).join("")}
     </tbody></table>`;
+  drawThanks(score, max, pct);
   drawReview("all");
   window.scrollTo(0,0);
   sendToSheet({score, max, pct, r, w, sk, acc, auto});
+}
+/* ---------- धन्यवाद चित्र: कुल अंक + रोज़ बदलता प्रेरक विचार ---------- */
+const THOUGHTS = [
+  "आप रोज़ जितना अभ्यास करेंगे, अपने भविष्य को उतना ही आसान बनाएँगे।",
+  "हर दिन का छोटा प्रयास, कल की बड़ी सफलता की नींव है।",
+  "गलतियाँ सीखने की सीढ़ी हैं — आज की गलती, कल का सही उत्तर।",
+  "निरंतरता ही सफलता की कुंजी है — रोज़ एक टेस्ट, रोज़ एक कदम आगे।",
+  "सपने वे नहीं जो सोते हुए आते हैं, सपने वे हैं जो आपको सोने नहीं देते।",
+  "मेहनत का कोई विकल्प नहीं — आज की पढ़ाई, कल की वर्दी।",
+  "जो आज पसीना बहाता है, वही कल परिणाम पर मुस्कुराता है।",
+  "आपकी तैयारी ही आपका आत्मविश्वास है — लगे रहिए!",
+  "हर प्रश्न जो आप आज हल करते हैं, परीक्षा के दिन आपका साथी बनेगा।",
+  "धीरे चलिए, पर रुकिए मत — मंज़िल ज़रूर मिलेगी।",
+  "सफलता रोज़ के छोटे-छोटे प्रयासों का जोड़ है।",
+  "कमज़ोर विषय को आज पहचानिए, कल उसे अपनी ताक़त बनाइए।",
+  "एक अच्छी नर्स बनने का सफ़र, एक अच्छी तैयारी से शुरू होता है।",
+  "आज का अनुशासन, कल की आज़ादी है।",
+  "खुद पर विश्वास रखिए — आप जितना सोचते हैं, उससे कहीं अधिक सक्षम हैं।",
+  "अंक सुधरते हैं अभ्यास से, और अभ्यास होता है रोज़ के संकल्प से।",
+  "जो रोज़ दोहराता है, वह कभी नहीं भूलता।",
+  "कठिन प्रश्न आपको डराने नहीं, मज़बूत बनाने आते हैं।",
+  "हार मानने से पहले याद रखिए — आपने शुरुआत क्यों की थी।",
+  "आज की मेहनत आपके परिवार के चेहरे की कल की मुस्कान है।",
+  "सीखना कभी व्यर्थ नहीं जाता — हर टेस्ट आपको चयन के करीब ले जाता है।",
+  "बड़े लक्ष्य के लिए रोज़ का छोटा अभ्यास ही सबसे बड़ा हथियार है।",
+  "सेवा का संकल्प और ज्ञान का अभ्यास — यही सफल नर्स की पहचान है।",
+  "समय का सदुपयोग कीजिए, समय आपका सदुपयोग करेगा।",
+  "परिणाम की चिंता छोड़िए, तैयारी पर ध्यान दीजिए — परिणाम स्वयं आएगा।",
+  "हर दिन पिछले दिन से थोड़ा बेहतर बनना ही असली जीत है।",
+  "मंज़िल उन्हीं को मिलती है जिनके सपनों में जान होती है।",
+  "अभ्यास वह पुल है जो सपनों और सफलता को जोड़ता है।",
+  "आज का एक घंटा, कल के वर्षों की सुरक्षा है।",
+  "विश्वास रखिए, लगातार चलिए — सफलता आपका इंतज़ार कर रही है।",
+  "जितना कठिन संघर्ष, उतनी ही शानदार जीत।"
+];
+function thoughtOfDay(){ return THOUGHTS[(SET.n - 1) % THOUGHTS.length]; }
+function wrapLines(ctx, text, maxW){
+  const words = String(text).split(" "), lines = []; let line = "";
+  words.forEach(w=>{ const t = line ? line+" "+w : w; if(ctx.measureText(t).width > maxW && line){ lines.push(line); line = w; } else line = t; });
+  if(line) lines.push(line); return lines;
+}
+function drawThanks(score, max, pct){
+  const box = $("thanksCard"); if(!box) return;
+  const thought = thoughtOfDay();
+  const render = ()=>{
+    try{
+      const W = 1080, H = 1080, c = document.createElement("canvas"); c.width = W; c.height = H;
+      const x = c.getContext("2d"), F = '"Noto Sans Devanagari", "Nirmala UI", "Mangal", sans-serif';
+      const g = x.createLinearGradient(0,0,W,H); g.addColorStop(0,"#0f5f73"); g.addColorStop(1,"#0b3d4a");
+      x.fillStyle = g; x.fillRect(0,0,W,H);
+      x.fillStyle = "rgba(255,255,255,.06)"; x.beginPath(); x.arc(W-90,110,220,0,Math.PI*2); x.fill();
+      x.beginPath(); x.arc(80,H-60,180,0,Math.PI*2); x.fill();
+      x.fillStyle = "#ffffff"; x.fillRect(60,60,W-120,H-120);
+      x.textAlign = "center"; x.textBaseline = "middle";
+      x.fillStyle = "#0f5f73"; x.font = "700 30px "+F; x.fillText("CG स्टाफ नर्स लाइव मॉक टेस्ट · "+LABEL, W/2, 125);
+      x.fillStyle = "#16a34a"; x.font = "700 92px "+F; x.fillText("धन्यवाद!", W/2, 240);
+      x.fillStyle = "#1d2421"; x.font = "600 40px "+F; x.fillText(String(S.name||"अभ्यर्थी"), W/2, 330);
+      x.fillStyle = "#5d6863"; x.font = "400 28px "+F; x.fillText("टेस्ट सफलतापूर्वक जमा हुआ — आपके कुल अंक", W/2, 395);
+      x.fillStyle = "#e2eff2"; x.beginPath(); x.arc(W/2, 555, 130, 0, Math.PI*2); x.fill();
+      x.strokeStyle = "#0f5f73"; x.lineWidth = 10; x.beginPath(); x.arc(W/2, 555, 130, -Math.PI/2, -Math.PI/2 + Math.PI*2*Math.max(0,Math.min(1,score/max))); x.stroke();
+      x.fillStyle = "#0f5f73"; x.font = "700 84px "+F; x.fillText(String(score), W/2, 535);
+      x.fillStyle = "#5d6863"; x.font = "600 30px "+F; x.fillText("/ "+max+"  ("+pct+"%)", W/2, 605);
+      x.fillStyle = "#b45309"; x.font = "700 30px "+F; x.fillText("✦ आज का विचार ✦", W/2, 745);
+      x.fillStyle = "#1d2421"; x.font = "600 36px "+F;
+      const lines = wrapLines(x, thought, W-240).slice(0,4);
+      lines.forEach((l,i)=>x.fillText(l, W/2, 815 + i*54 - (lines.length-1)*12));
+      x.fillStyle = "#5d6863"; x.font = "400 24px "+F; x.fillText("tiku0407.github.io/staff-nurse-mock-test", W/2, H-95);
+      const url = c.toDataURL("image/png");
+      box.innerHTML = `<img id="thanksImg" src="${url}" alt="धन्यवाद — कुल अंक ${score}/${max}">
+        <div class="btns"><a class="btn green" id="thanksDl" href="${url}" download="mock-test-set-${pad2(SET.n)}-result.png">चित्र डाउनलोड करें</a>
+        <button class="btn ghost" id="thanksShare" type="button">शेयर करें</button></div>`;
+      $("thanksShare").onclick = async ()=>{
+        try{
+          const blob = await (await fetch(url)).blob();
+          const file = new File([blob], "mock-test-result.png", {type:"image/png"});
+          if(navigator.canShare && navigator.canShare({files:[file]})) await navigator.share({files:[file], title:"मॉक टेस्ट परिणाम", text:thought});
+          else $("thanksDl").click();
+        }catch(e){}
+      };
+    }catch(e){
+      box.innerHTML = `<h2>धन्यवाद, ${esc(S.name||"")}!</h2><div class="score">${score} / ${max}</div><p><strong>आज का विचार:</strong> ${esc(thought)}</p>`;
+    }
+  };
+  box.innerHTML = `<h2>धन्यवाद, ${esc(S.name||"")}!</h2><div class="score">${score} / ${max}</div><p><strong>आज का विचार:</strong> ${esc(thought)}</p>`;
+  (document.fonts && document.fonts.load ? Promise.all([document.fonts.load('700 40px "Noto Sans Devanagari"'), document.fonts.load('600 40px "Noto Sans Devanagari"')]).catch(()=>{}) : Promise.resolve()).then(render);
 }
 /* ---------- उत्तर-डेटा Google Sheet में (config.js का SHEET_URL; हर प्रयास केवल एक बार) ---------- */
 function sendToSheet(R){
